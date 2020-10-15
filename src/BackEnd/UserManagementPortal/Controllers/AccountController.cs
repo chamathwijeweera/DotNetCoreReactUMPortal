@@ -11,6 +11,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using UserManagementPortal.Data;
 using UserManagementPortal.Infastructure;
 using UserManagementPortal.Modals;
 
@@ -18,17 +19,20 @@ namespace UserManagementPortal.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountsController : ControllerBase
+    public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly IJWTAuthManager _jWTAuthManager;
 
-        public AccountsController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, IJWTAuthManager jWTAuthManager)
+        public AccountController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
+                                 ApplicationDbContext context, IConfiguration configuration, IJWTAuthManager jWTAuthManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _context = context;
             _configuration = configuration;
             _jWTAuthManager = jWTAuthManager;
         }
@@ -119,8 +123,9 @@ namespace UserManagementPortal.Controllers
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             var userRoles = await _userManager.GetRolesAsync(currentUser);
+            var modulePermissions = _context.UserModulePermissions.Where(e => e.UserId == currentUser.Id).Select(e=> new UserPermission() { ModuleId=e.ModuleId,OperationId=e.OperationId}).ToList();
 
-            var userObj = new User() { Email = currentUser.Email, Name = currentUser.UserName, UserRoles = userRoles.ToList() };
+            var userObj = new User() { Email = currentUser.Email, Name = currentUser.UserName, UserRoles = userRoles.ToList(),UserPermission = modulePermissions };
             return Ok(userObj);
         }      
 

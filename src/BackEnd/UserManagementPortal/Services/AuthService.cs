@@ -26,7 +26,7 @@ namespace UserManagementPortal.Services
 
             var userPermission = _context.UserModulePermissions.Where(e => e.UserId == user.Id).ToList();
 
-            var entitled = userPermission.Where(e => e.OperationId == operation.ToString() && e.ModuleId == modules.ToString()).Any();
+            var entitled = userPermission.Where(e => e.OperationId == ((int)operation).ToString() && e.ModuleId == ((int)modules).ToString()).Any();
 
             return entitled;
         }
