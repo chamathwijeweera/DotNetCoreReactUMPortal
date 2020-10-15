@@ -10,8 +10,8 @@ using UserManagementPortal.Data;
 namespace UserManagementPortal.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20201007104933_Initial")]
-    partial class Initial
+    [Migration("20201015105040_Initialsetup")]
+    partial class Initialsetup
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -215,6 +215,26 @@ namespace UserManagementPortal.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("UserManagementPortal.Modals.UserModulePermission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ModuleId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OperationId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserModulePermissions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

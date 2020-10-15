@@ -10,6 +10,9 @@ namespace UserManagementPortal.Data
         {
 
         }
+
+        public virtual DbSet<UserModulePermission> UserModulePermissions { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

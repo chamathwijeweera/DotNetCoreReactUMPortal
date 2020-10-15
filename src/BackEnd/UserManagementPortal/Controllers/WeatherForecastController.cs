@@ -8,7 +8,7 @@ using UserManagementPortal.Modals;
 
 namespace UserManagementPortal.Controllers
 {
-    [Authorize(Roles = UserRoles.StandardUser)]
+    [Authorize(Roles = UserRoles.Customer)]
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase

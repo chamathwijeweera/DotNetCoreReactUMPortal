@@ -215,6 +215,26 @@ namespace UserManagementPortal.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("UserManagementPortal.Modals.UserModulePermission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ModuleId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OperationId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserModulePermissions");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)

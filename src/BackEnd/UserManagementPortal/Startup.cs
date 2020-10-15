@@ -11,6 +11,7 @@ using System.Text;
 using UserManagementPortal.Data;
 using UserManagementPortal.Infastructure;
 using UserManagementPortal.Modals;
+using UserManagementPortal.Services;
 
 namespace UserManagementPortal
 {
@@ -26,6 +27,9 @@ namespace UserManagementPortal
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Services
+            services.AddScoped<IAuthService, AuthService>();
+
             services.AddControllers();
 
             // For Entity Framework
@@ -51,8 +55,8 @@ namespace UserManagementPortal
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
                     ValidateIssuerSigningKey = true,
                     ValidateLifetime = true,
                     ValidAudience = Configuration["JWTConfig:ValidAudience"],

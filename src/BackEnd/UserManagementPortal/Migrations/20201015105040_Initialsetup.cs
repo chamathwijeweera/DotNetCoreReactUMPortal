@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace UserManagementPortal.Migrations
 {
-    public partial class Initial : Migration
+    public partial class Initialsetup : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -44,6 +44,20 @@ namespace UserManagementPortal.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserModulePermissions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<string>(nullable: true),
+                    ModuleId = table.Column<string>(nullable: true),
+                    OperationId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserModulePermissions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -208,6 +222,9 @@ namespace UserManagementPortal.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "UserModulePermissions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

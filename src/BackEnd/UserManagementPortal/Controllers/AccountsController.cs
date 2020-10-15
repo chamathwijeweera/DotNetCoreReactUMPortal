@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,7 +37,7 @@ namespace UserManagementPortal.Controllers
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var user = await _userManager.FindByNameAsync(model.Username);
+            var user = await _userManager.FindByEmailAsync(model.Email);
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
@@ -60,7 +62,7 @@ namespace UserManagementPortal.Controllers
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
-            var userExists = await _userManager.FindByNameAsync(model.Username);
+            var userExists = await _userManager.FindByEmailAsync(model.Email);
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
@@ -72,45 +74,94 @@ namespace UserManagementPortal.Controllers
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again.", Errors = result.Errors.ToList() });
 
             await CreateRoles();
 
             await _userManager.AddToRoleAsync(user, GetUserRole(model.UserRole));
 
-            return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+            //need to refactor
+
+            //return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+            var userObj = await _userManager.FindByEmailAsync(model.Email);
+            if (userObj != null && await _userManager.CheckPasswordAsync(userObj, model.Password))
+            {
+                var userRoles = await _userManager.GetRolesAsync(userObj);
+
+                var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, userObj.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                };
+
+                foreach (var userRole in userRoles)
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                }
+
+                return Ok(_jWTAuthManager.GenerateTokens(authClaims));
+            }
+            return Unauthorized();
         }
+
+        [HttpGet]
+        [Route("users")]
+        public IActionResult GetUsers()
+        {
+            var users = _userManager.Users.Select(e => new { Name = e.UserName, e.Email }).ToList();
+            return Ok(new { results = users });
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("authuser")]
+        public async Task<IActionResult> GetUser()
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var userRoles = await _userManager.GetRolesAsync(currentUser);
+
+            var userObj = new User() { Email = currentUser.Email, Name = currentUser.UserName, UserRoles = userRoles.ToList() };
+            return Ok(userObj);
+        }      
 
         private async Task<bool> CreateRoles()
         {
-            try
-            {
-                if (!await _roleManager.RoleExistsAsync(UserRoles.Administrator))
-                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.Administrator));
-                if (!await _roleManager.RoleExistsAsync(UserRoles.StandardUser))
-                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.StandardUser));
+            if (!await _roleManager.RoleExistsAsync(UserRoles.Administrator))
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Administrator));
 
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            if (!await _roleManager.RoleExistsAsync(UserRoles.Manager))
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Manager));
+
+            if (!await _roleManager.RoleExistsAsync(UserRoles.Developer))
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Developer));
+
+            if (!await _roleManager.RoleExistsAsync(UserRoles.Customer))
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Customer));
+
+            return true;
         }
 
-        public string GetUserRole (string role)
+        public string GetUserRole(string role)
         {
-            if(role == "admin")
+            if (role == "Administrator")
             {
                 return UserRoles.Administrator;
             }
-            else if(role == "suser")
+            else if (role == "Manager")
             {
-                return UserRoles.StandardUser;
+                return UserRoles.Manager;
+            }
+            else if (role == "Developer")
+            {
+                return UserRoles.Developer;
+            }
+            else if (role == "Customer")
+            {
+                return UserRoles.Customer;
             }
             else
             {
-                return UserRoles.StandardUser;
+                return string.Empty;
             }
         }
     }
