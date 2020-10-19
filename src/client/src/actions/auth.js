@@ -13,7 +13,7 @@ export const loadUser = () => async dispatch => {
     }
 
     try {
-        const response = await axios.get(`${urlBase}/api/accounts/authuser`);
+        const response = await axios.get(`${urlBase}/api/account/authuser`);
 
         dispatch({
             type: USER_LOADED,
@@ -37,11 +37,12 @@ export const resgiter = (userData) => async dispatch => {
     const body = JSON.stringify(userData);
 
     try {
-        const response = await axios.post(`${urlBase}/api/accounts/register`, body, config);
+        const response = await axios.post(`${urlBase}/api/account/register`, body, config);
         dispatch({
             type: REGISTER_SUCCESS,
             payload: response.data
         });
+        dispatch(loadUser());
     } catch (error) {
 
         const errorObj = error.response.data;
@@ -78,11 +79,14 @@ export const login = (userCredentials) => async dispatch => {
     const body = JSON.stringify(userCredentials);
 
     try {
-        const response = await axios.post(`${urlBase}/api/accounts/login`, body, config);
+        const response = await axios.post(`${urlBase}/api/account/login`, body, config);
         dispatch({
             type: LOGIN_SUCCESS,
             payload: response.data
         });
+
+        dispatch(loadUser());
+
     } catch (error) {
 
         const errorObj = error.response.data;

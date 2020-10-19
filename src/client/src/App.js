@@ -5,6 +5,8 @@ import Landing from './components/layout/Landing';
 import Register from './components/auth/Register';
 import Login from './components/auth/Login';
 import Alert from './components/layout/Alert';
+import Dashboard from "./components/dashboard/Dashboard";
+import PrivateRoute from "./components/routes/PrivateRoute";
 //redux
 import { Provider } from 'react-redux';
 import store from './store';
@@ -13,13 +15,13 @@ import setAuthToken from "./utils/setAuthToken";
 
 import './App.css'
 
-if(localStorage.atk){
+if (localStorage.atk) {
   setAuthToken(localStorage.atk)
 }
 
 const App = () => {
 
-  useEffect(()=>{
+  useEffect(() => {
     store.dispatch(loadUser());
   }, []); //only run once
 
@@ -27,13 +29,14 @@ const App = () => {
     <Provider store={store}>
       <Router>
         <Fragment>
-          <Navbar/>
+          <Navbar />
           <Route exact path="/" component={Landing} />
           <section className="container">
-            <Alert/>
+            <Alert />
             <Switch>
               <Route exact path="/register" component={Register} />
               <Route exact path="/login" component={Login} />
+              <PrivateRoute exact path="/dashboard" component={Dashboard} />
             </Switch>
           </section>
         </Fragment>
