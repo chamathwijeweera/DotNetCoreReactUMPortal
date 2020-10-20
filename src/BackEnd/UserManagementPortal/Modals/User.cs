@@ -6,7 +6,7 @@ namespace UserManagementPortal.Modals
     {
         public string Name { get; set; }
         public string Email { get; set; }
-        public List<string> UserRoles { get; set; }
-        public List<UserPermission> UserPermission { get; set; }
+        public List<string> Roles { get; set; }
+        public List<UserPermission> Permissions { get; set; }
     }
 }

@@ -124,15 +124,15 @@ namespace UserManagementPortal.Controllers
             var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
             var userRoles = await _userManager.GetRolesAsync(currentUser);
             var modulePermissions = _context.UserModulePermissions.Where(e => e.UserId == currentUser.Id)
-                                    .Select(e=> new UserPermission() 
-                                    { 
-                                        ModuleId= e.ModuleId,
-                                        OperationId=  e.OperationId 
+                                    .Select(e => new UserPermission()
+                                    {
+                                        ModuleId = e.ModuleId,
+                                        OperationId = e.OperationId
                                     }).ToList();
 
-            var userObj = new User() { Email = currentUser.Email, Name = currentUser.UserName, UserRoles = userRoles.ToList(),UserPermission = modulePermissions };
+            var userObj = new User() { Email = currentUser.Email, Name = currentUser.UserName, Roles = userRoles.Select(e=>e.ToLower()).ToList(), Permissions = modulePermissions };
             return Ok(userObj);
-        }      
+        }
 
         private async Task<bool> CreateRoles()
         {

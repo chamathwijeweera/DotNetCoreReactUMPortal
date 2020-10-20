@@ -1,29 +1,59 @@
 import PropTypes from "prop-types";
 import rules from "../../permissions";
+import { connect } from "react-redux";
+import _ from 'lodash';
 
-const check = (roles, per, data) => {
-  const permissions = rules[role];
-  if (!permissions) {
-    // role is not present in the rules
-    return false;
+const checkUserPermission = (auth, module, allowedActions) => {
+
+  var authorized = false;
+
+  if (!auth.loading) {
+
+    var user = auth.user;
+
+    _.forEach(user.roles, function (role) {
+
+      const permissions = rules[role];
+
+      if (permissions) {
+
+        const staticRules = permissions.static;
+
+        if (staticRules) {
+
+          _.forEach(staticRules, function (permission) {
+
+            if (permission.moduleId === module && permission.operationId == allowedActions) {
+              authorized = true;
+            }
+
+            // _.forEach(staticRules, function (rule) {
+
+            //   if (permission.moduleId === rule.moduleId && permission.operationId == rule.operationId) {
+            //     authorized = true;
+            //   }
+            // })
+          })
+        }
+      }
+    })
   }
 
-  const staticPermissions = permissions.static;
-
-  if (staticPermissions && staticPermissions.includes(action)) {
-    // static rule not provided for action
-    return true;
-  }
-
-  return false;
+  return authorized;
 };
 
-const IsAuthorized = (props) =>
-  check(props.roles, props.permissions, props.perform,) ? props.yes() : props.no();
+const IsAuthorized = ({ auth, module, perform, yes, no }) => (
 
-IsAuthorized.propTypes  = {
-  yes: () => null,
-  no: () => null
-};
+  checkUserPermission(auth, module, perform) ? yes() : no()
 
-export default IsAuthorized;
+);
+
+
+
+
+
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default connect(mapStateToProps)(IsAuthorized);

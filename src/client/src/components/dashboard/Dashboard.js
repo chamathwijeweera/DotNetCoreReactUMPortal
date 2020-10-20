@@ -1,28 +1,70 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from "react-redux";
 import IsAuthorized from "../auth/IsAuthorized";
+import _ from 'lodash';
 
-const Dashboard = ({auth: { loading, user }}) => {
+const Dashboard = ({ auth: { loading, user } }) => {
     return (
-        <IsAuthorized
-        roles={user.userRoles}
-        permissions={user.userPermissions}
-        perform="1"
-        yes={() => (
-          <div>
-            <h1>You have create permission</h1>
-          </div>
-        )}
-        no={() => (
-            <div>
-                <h1>You don't have create permission</h1>
-            </div>
-        )}
-        />
-        // <div>
-        //     <h1>Lol</h1>
-        // </div>
+        <div>
+            <h1>Welcome - {!loading && user.name}</h1><br />
+ 
+               { !loading && <h4>Roles - {_.join(user.roles, ' | ')}</h4>}
+            
+            <br />
+            {
+                !loading &&
+                <IsAuthorized module="12" perform="1"
+                    yes={() => (
+                        <div>
+                            <input type="submit" className="btn btn-primary" value="Creat" />
+                        </div>
+                    )}
+                    no={() => (
+                        <Fragment />
+                    )}
+                />
+            }
+            {
+                !loading &&
+                <IsAuthorized module="12" perform="3"
+                    yes={() => (
+                        <div>
+                            <input type="submit" className="btn btn-primary" value="Update" />
+                        </div>
+                    )}
+                    no={() => (
+                        <Fragment />
+                    )}
+                />
+            }
+            {
+                !loading &&
+                <IsAuthorized module="14" perform="2"
+                    yes={() => (
+                        <div>
+                            <input type="submit" className="btn btn-primary" value="View" />
+                        </div>
+                    )}
+                    no={() => (
+                        <Fragment />
+                    )}
+                />
+            }
+            {
+                !loading &&
+                <IsAuthorized module="13" perform="5"
+                    yes={() => (
+                        <div>
+                            <input type="submit" className="btn btn-primary" value="Execute" />
+                        </div>
+                    )}
+                    no={() => (
+                        <Fragment />
+                    )}
+                />
+            }
+        </div>
     )
 }
 

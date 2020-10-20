@@ -78,7 +78,9 @@ const Register = ({ setAlert, resgiter, isAuthenticated }) => {
                     <select name="userrole" value={userrole} onChange={e => onInputChange(e)}>
                         <option value="0">Select user role</option>
                         <option value="Administrator">Administrator</option>
-                        <option value="StandardUser">StandardUser</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Developer">Developer</option>
+                        <option value="Customer">Customer</option>
                     </select>
                 </div>
                 <input type="submit" className="btn btn-primary" value="Register" />

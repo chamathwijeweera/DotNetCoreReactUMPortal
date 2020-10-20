@@ -1,50 +1,42 @@
 const rules = {
     administrator: {
       static: [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5"
+         {moduleId: "11", operationId: "1"},
+         {moduleId: "11", operationId: "2"},
+         {moduleId: "11", operationId: "3"},
+         {moduleId: "11", operationId: "4"},
+         {moduleId: "11", operationId: "5"}
       ]
     },
     manager: {
       static: [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5"
-      ],
-      dynamic: {
-       
-      }
+         {moduleId: "12", operationId: "1"},
+         {moduleId: "12", operationId: "2"},
+         {moduleId: "12", operationId: "3"}
+      ]
+    },
+    developer: {
+      static: [
+         {moduleId: "13", operationId: "5"}
+      ]
     },
     customer: {
       static: [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5"
-      ]
-    }
-    ,
-    developer: {
-      static: [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5"
+         {moduleId: "14", operationId: "2"},
       ]
     }
   };
   
   export default rules;
 
-//   Create = 1,
-//         Read = 2,
-//         Update = 3,
-//         Delete = 4,
-//         Execute = 5
+
+  // Create = 1,
+  //       Read = 2,
+  //       Update = 3,
+  //       Delete = 4,
+  //       Execute = 5
+
+  //       Administrator = 11,
+  //       Manager = 12,
+  //       Developer = 13,
+  //       Customer = 14,
